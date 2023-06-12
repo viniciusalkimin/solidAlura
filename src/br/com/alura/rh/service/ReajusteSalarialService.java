@@ -5,14 +5,22 @@ import br.com.alura.rh.model.Funcionario;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class ReajusteSalarialService {
 
+    private List<ValidacaoReajuste> validacaoReajuste;
+
+    public ReajusteSalarialService(List<ValidacaoReajuste> validacaoReajuste) {
+        this.validacaoReajuste = validacaoReajuste;
+    }
+
     public void reajustarSalarioDoFuncionario(Funcionario funcionario, BigDecimal aumento) {
-        BigDecimal percentualReajuste = aumento.divide(funcionario.getSalario(), RoundingMode.HALF_UP);
-        if (percentualReajuste.compareTo(new BigDecimal("0.4")) > 0) {
-            throw new ValidacaoException("Reajuste nao pode ser superior a 40% do salario!");
-        }
+
+        validacaoReajuste.forEach(v -> v.validar(funcionario,aumento));
+
         BigDecimal novoSalario = funcionario.getSalario().add(aumento);
         funcionario.atualizarSalario(novoSalario);
     }
